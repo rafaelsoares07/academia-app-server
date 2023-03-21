@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Academy {
+  id            Int          @id @default(autoincrement())
+  name          String
+  email         String
+  password      String
+  cidade        String
+  rua           String
+  numero        String
+  AccessLevel   AccessLevel? @relation(fields: [accessLevelId], references: [id])
+  accessLevelId Int?
+
+  instructor Instructor[]
+  client     Client[]
+
+  @@map("academy")
+}
+
+model Instructor {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String
+  cpf      String
+  password String
+
+  AccessLevel   AccessLevel? @relation(fields: [accessLevelId], references: [id])
+  accessLevelId Int?
+
+  Academy   Academy? @relation(fields: [academyId], references: [id])
+  academyId Int?
+
+  @@map("instructor")
+}
+
+model Client {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String
+  cpf      String
+  password String
+
+  AccessLevel   AccessLevel? @relation(fields: [accessLevelId], references: [id])
+  accessLevelId Int?
+
+  Academy   Academy? @relation(fields: [academyId], references: [id])
+  academyId Int?
+
+  @@map("client")
+}
+
+model AccessLevel {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String
+  created_at  DateTime @default(now())
+
+  academy    Academy[]
+  instructor Instructor[]
+  client     Client[]
+
+  @@map("access_level")
+}
